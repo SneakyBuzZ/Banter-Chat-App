@@ -27,7 +27,7 @@ const Logo = ({
             lily_script_one.className
           )}
         >
-          Banter
+          Website
         </h4>
       )}
     </div>

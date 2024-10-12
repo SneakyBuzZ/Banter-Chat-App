@@ -6,7 +6,10 @@ export interface AuthUser {
   email?: string | null;
   image?: string | null;
   provider?: string | null;
-  token?: string | null;
+  oauthId?: string | null;
+  refreshToken?: string | null;
+  accessToken?: string | null;
+  createdAt?: string | null;
 }
 
 export interface AuthSession {

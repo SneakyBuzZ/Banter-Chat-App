@@ -1,4 +1,6 @@
-import { AuthSession, AuthUser } from "@/lib/interfaces";
+import { handleSignInOption } from "@/app/api/auth/[...nextauth]/api";
+import { AuthSession } from "@/lib/interfaces";
+import { SignInCallbackType } from "@/lib/types";
 import { AuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import GithubProvider from "next-auth/providers/github";
@@ -9,20 +11,36 @@ export const authOptions: AuthOptions = {
     signIn: "/",
   },
   callbacks: {
-    async signIn({ user, account }) {
-      console.log("USER DATA: ", user);
-      console.log("ACCOUNT DATA: ", account);
-      return true;
+    async signIn({ user, account }: SignInCallbackType) {
+      let response = await handleSignInOption({
+        user,
+        account,
+      });
+
+      if (response.isAllowed === "redirectToLogin") {
+        response = await handleSignInOption({
+          user,
+          account,
+        });
+      }
+
+      user.id = response?.user?.id || user.id;
+      user.name = response?.user?.name || user.name;
+      user.email = response?.user?.email || user.email;
+      user.image = response?.user?.image || user.image;
+      user.oauthId = response?.user?.oauthId || user.oauthId;
+      user.provider = response?.user?.name || user.name;
+      user.accessToken = response?.user?.accessToken || user.accessToken;
+      user.refreshToken = response?.user?.refreshToken || user.refreshToken;
+
+      return response.isAllowed;
     },
     async session({ session, token }: { session: AuthSession; token: JWT }) {
-      session.user = token.user as AuthUser;
+      session.user = token;
       return session;
     },
     async jwt({ token, user }) {
-      if (user) {
-        token.user = user;
-      }
-      return token;
+      return { ...token, ...user };
     },
   },
   providers: [

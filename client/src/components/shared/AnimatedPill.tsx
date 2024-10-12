@@ -4,10 +4,7 @@ import { cn } from "@/lib/utils";
 import AnimatedShinyText from "@/components/ui/animated-shiny-text";
 import { AnimatedPillPropsType } from "@/lib/types";
 
-export async function AnimatedPill({
-  className,
-  label,
-}: AnimatedPillPropsType) {
+export function AnimatedPill({ className, label }: AnimatedPillPropsType) {
   return (
     <div className={cn("z-10 flex items-center justify-center", className)}>
       <div
